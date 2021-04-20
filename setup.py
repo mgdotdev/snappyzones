@@ -35,7 +35,7 @@ setup(
     ],
     description="a Linux window manager based on Microsoft's FancyZones",
     entry_points={
-    'console_scripts': ['snappy=snappy.main:main']
+        'console_scripts': ['snappy=snappyzones.main:main']
     },
     include_package_data=True,
     install_requires=read_requirements("requirements.txt"),

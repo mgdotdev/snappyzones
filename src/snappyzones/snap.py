@@ -14,18 +14,33 @@ def active_window(display):
         return None
 
 
+def geometry_deltas(window, display):
+    root = display.screen().root
+    wg = window.get_geometry()
+    dx, dy, dw, dh = 0, 0, 0, 0
+    while all(x == 0 for x in (dx, dy, dw, dh)):
+        parent = window.query_tree().parent
+        pg = parent.get_geometry()
+        dx = pg.x - wg.x
+        dy = pg.y - wg.y
+        dw = pg.width - wg.width
+        dh = pg.height - wg.height
+        window = parent
+    return dx, dy, dw, dh
+
+
 def snap_window(x, y):
     display = Display()
     zone_profile = ZoneProfile._test()
     window = active_window(display)
+    dx, dy, dw, dh = geometry_deltas(window, display)
     zone = zone_profile.find_zone(x, y)
-
     if window and zone:
         window.configure(
-            x=zone.x,
-            y=zone.y,
-            width=zone.width,
-            height=zone.height,
+            x=zone.x + dw,
+            y=zone.y + dh,
+            width=zone.width - dx,
+            height=zone.height - dy,
             stack_mode=X.Above
         )
         display.sync()
