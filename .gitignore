@@ -1,3 +1,5 @@
 .venv/
 .sandbox/
 __pycache__/
+
+*egg-info/
