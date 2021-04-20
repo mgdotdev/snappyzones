@@ -1,5 +1,7 @@
 import json
-from os import stat
+import os.path
+
+HERE = os.path.abspath(os.path.dirname(__file__))
 
 class Zone:
     def __init__(self, x, y, width, height) -> None:
@@ -28,17 +30,7 @@ class ZoneProfile:
                 return item
 
     @staticmethod
-    def from_file(path):
+    def from_file(path = os.path.join(HERE, "zones.json")):
         with open(path, 'r') as f:
             data = json.loads(f.read())
         return ZoneProfile([Zone(**obj) for obj in data])
-
-    @staticmethod
-    def _test():
-        return ZoneProfile([
-            Zone(0, 0, 1080, 1920),
-            Zone(1080, 0, 1080, 600),
-            Zone(1080, 600, 1080, 1320),
-            Zone(2160, 335, 1920, 540),
-            Zone(2160, 335, 1920, 540)
-        ])

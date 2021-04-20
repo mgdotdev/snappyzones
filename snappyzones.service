@@ -1,0 +1,10 @@
+[Unit]
+Description=FancyZones for Linux
+After=multi-user.target
+
+[Service]
+User=michaelgrn
+ExecStart=snappy
+
+[Install]
+WantedBy=multi-user.target
