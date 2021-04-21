@@ -3,6 +3,7 @@ import os.path
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
+
 class Zone:
     def __init__(self, x, y, width, height) -> None:
         self.x = x

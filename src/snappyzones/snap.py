@@ -4,10 +4,12 @@ from Xlib.display import Display
 
 from .zoning import ZoneProfile
 
-def active_window(display):
-    window_id = display.screen().root.get_full_property(
-        display.intern_atom('_NET_ACTIVE_WINDOW'), X.AnyPropertyType
-    ).value[0]
+
+def active_window(display, window_id=None):
+    if not window_id:
+        window_id = display.screen().root.get_full_property(
+            display.intern_atom('_NET_ACTIVE_WINDOW'), X.AnyPropertyType
+        ).value[0]
     try:
         return display.create_resource_object('window', window_id)
     except XError:
@@ -15,9 +17,9 @@ def active_window(display):
         
 
 def geometry_deltas(window):
-    """The window of an app usually sits within an Xorg frame, and we want to 
-    fit that frame to the zone and not the inner window (so decorations 
-    like borders are properly handled)"""
+    """The window of an app usually sits within an Xorg parent frame, and we 
+    want to fit that parent frame to the zone and not the inner window (so 
+    decorations like borders are properly handled)"""
     wg = window.get_geometry()
     dx, dy, dw, dh = 0, 0, 0, 0
     parent = window.query_tree().parent
