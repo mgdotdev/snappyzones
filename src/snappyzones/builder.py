@@ -66,15 +66,14 @@ class ZoneBuilder:
         self.terminate()
 
     def add(self, count):
-        for i in range(int(count)):
+        for _ in range(int(count)):
             window = self.screen.root.create_window(
                 10, 10, 500, 250, 1,
                 self.screen.root_depth,
-                background_pixel=45000,
+                background_pixel=750000,
                 event_mask=X.ExposureMask | X.KeyPressMask,
             )
             window.map()
-
             self.zones.append(window)
         thread = threading.Thread(target=self.loop)
         thread.daemon = True
