@@ -19,7 +19,10 @@ def active_window(display, window_id=None):
 def geometry_deltas(window):
     """The window of an app usually sits within an Xorg parent frame, and we 
     want to fit that parent frame to the zone and not the inner window (so 
-    decorations like borders are properly handled)"""
+    decorations like borders are properly handled). I can't seem to get that
+    window to update directly, so we'll update the child window using the
+    difference b/t the parent and child so to fit the final result 
+    correctly."""
     wg = window.get_geometry()
     dx, dy, dw, dh = 0, 0, 0, 0
     parent = window.query_tree().parent

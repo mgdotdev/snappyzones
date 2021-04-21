@@ -9,9 +9,9 @@ KEYS = {
     's': 39,
     'ALT': 64,
     "UP_ARROW": 111,
-    "LEFT_ARROW":113,
-    "RIGHT_ARROW":114,
-    "DOWN_ARROW":116
+    "LEFT_ARROW": 113,
+    "RIGHT_ARROW": 114,
+    "DOWN_ARROW": 116
 }
 
 class Service:
@@ -44,6 +44,10 @@ class Service:
                 
             if event.type == X.KeyPress and event.detail == KEYS['ALT']:
                 self.alt = True
+
+            elif event.type == X.KeyRelease and event.detail == KEYS['ALT']:
+                self.alt = False
+                self.track = False
 
             elif all([
                 event.type == X.KeyPress,
