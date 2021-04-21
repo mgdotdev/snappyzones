@@ -12,7 +12,7 @@ def main():
         service.listen()
     
     if cmd == ["config"]:
-        zb = ZoneBuilder()
+        zb = ZoneBuilder(*args, **kwargs)
         zb.main()
     
     

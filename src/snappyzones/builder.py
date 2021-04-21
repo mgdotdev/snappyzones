@@ -9,28 +9,78 @@ from Xlib.error import ConnectionClosedError
 
 from .snap import active_window
 
+
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
-class Window:
-    def __init__(self, display, msg):
-        self.display = display
-        self.msg = msg
- 
+class ZoneBuilder:
+
+    def __init__(self, *args, **kwargs) -> None:
+        self.zones = []
+        self.display = Display()
         self.screen = self.display.screen()
-        self.window = self.screen.root.create_window(
-            10, 10, 500, 250, 1,
-            self.screen.root_depth,
-            background_pixel=self.screen.black_pixel,
-            event_mask=X.ExposureMask | X.KeyPressMask,
+        self.running = True
+
+        if count := kwargs.get('-n'):
+            self.add(count)
+
+    def _main_action(self):
+        return input(
+            'specify action:\n$ '
         )
-        self.gc = self.window.create_gc(
-            background = self.screen.black_pixel,
+
+    def _get_count(self):
+        return input(
+            'specify count:\n$ '
         )
-        self.window.map()
- 
+
+    def main(self):
+        action = self._main_action()
+
+        if action == "save":
+            self.save
+
+        elif action == "exit":
+            self.terminate() 
+
+        else:
+            print('action not understood. Please try again.\n')
+
+        self.main()
+
+    @property
+    def save(self):
+        results = []
+        for zone in self.zones:
+            # for some reason this works better with a new display
+            # object on each iteration
+            window = active_window(Display(), zone.id)  
+            pg = window.query_tree().parent.query_tree().parent.get_geometry()
+            results.append({
+                "x": pg.x,
+                "y": pg.y,
+                "width": pg.width,
+                "height": pg.height
+            })
+        self._write(results)
+        self.terminate()
+
+    def add(self, count):
+        for i in range(int(count)):
+            window = self.screen.root.create_window(
+                10, 10, 500, 250, 1,
+                self.screen.root_depth,
+                background_pixel=45000,
+                event_mask=X.ExposureMask | X.KeyPressMask,
+            )
+            window.map()
+
+            self.zones.append(window)
+        thread = threading.Thread(target=self.loop)
+        thread.daemon = True
+        thread.start()
+
     def loop(self):
-        # maybe only have one event loop per builder?
         while True:
             try:
                 e = self.display.next_event()
@@ -43,59 +93,8 @@ class Window:
                 # an already made window)
                 #
                 # for now, just kill everything
+                print()
                 os._exit(1)
-
-    @property
-    def _id(self):
-        return self.window.id
-
-class ZoneBuilder:
-
-    def __init__(self) -> None:
-        self.zones = []
-        self.display = Display()
-        self.screen = self.display.screen()
-
-    def _main_action(self):
-        return input(
-            'specify action:\n$ '
-        )
-
-    def main(self):
-        action = self._main_action()
-        if action == "add":
-            self.add
-
-        elif action == "done":
-            self.done
-
-        elif action == "exit":
-            self.terminate() 
-
-        self.main()
-
-    @property
-    def done(self):
-        results = []
-        for zone, _ in self.zones:
-            window = active_window(self.display, zone._id)
-            pg = window.query_tree().parent.query_tree().parent.get_geometry()
-            results.append({
-                "x": pg.x,
-                "y": pg.y,
-                "width": pg.width,
-                "height": pg.height
-            })
-        self._write(results)
-        self.terminate()
-            
-    @property
-    def add(self):
-        window = Window(self.display, f"Zone {len(self.zones) + 1}")
-        thread = threading.Thread(target=window.loop)
-        thread.daemon = True
-        thread.start()
-        self.zones.append([window, thread])
 
     def _read(self, path = os.path.join(HERE, "zones.json")):
         with open(path, 'r') as f:
