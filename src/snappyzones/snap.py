@@ -31,6 +31,24 @@ def geometry_deltas(window):
     return dx, dy, dw, dh
 
 
+def shift_window(direction):
+    display = Display()
+    zone_profile = ZoneProfile.from_file()
+    window = active_window(display)
+    dx, dy, dw, dh = geometry_deltas(window)
+    pg = window.query_tree().parent.query_tree().parent.get_geometry()
+    zone = zone_profile.find_zone(pg.x + pg.width/2, pg.y + pg.height/2, direction)
+    if window and zone:
+        window.configure(
+            x=zone.x,
+            y=zone.y,
+            width=zone.width - dx,
+            height=zone.height - dy,
+            stack_mode=X.Above
+        )
+        display.sync()
+
+
 def snap_window(x, y):
     display = Display()
     zone_profile = ZoneProfile.from_file()
@@ -39,8 +57,8 @@ def snap_window(x, y):
     zone = zone_profile.find_zone(x, y)
     if window and zone:
         window.configure(
-            x=zone.x + dw,
-            y=zone.y + dh,
+            x=zone.x,
+            y=zone.y,
             width=zone.width - dx,
             height=zone.height - dy,
             stack_mode=X.Above

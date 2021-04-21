@@ -3,7 +3,16 @@ from Xlib.ext import record
 from Xlib.display import Display
 from Xlib.protocol import rq
 
-from .snap import snap_window
+from .snap import snap_window, shift_window
+
+KEYS = {
+    's': 39,
+    'ALT': 64,
+    "UP_ARROW": 111,
+    "LEFT_ARROW":113,
+    "RIGHT_ARROW":114,
+    "DOWN_ARROW":116
+}
 
 class Service:
     def __init__(self) -> None:
@@ -33,13 +42,13 @@ class Service:
         while len(data):
             event, data = rq.EventField(None).parse_binary_value(data, self.display.display, None, None)
                 
-            if event.type == X.KeyPress and event.detail == 64:
+            if event.type == X.KeyPress and event.detail == KEYS['ALT']:
                 self.alt = True
 
             elif all([
                 event.type == X.KeyPress,
                 self.alt,
-                event.detail == 39
+                event.detail == KEYS['s']
             ]):
                 self.track = True
 
@@ -47,6 +56,12 @@ class Service:
                 snap_window(event.root_x, event.root_y)
                 self.alt = False
                 self.track = False
+
+            elif event.type == X.KeyPress and self.track and event.detail == KEYS['LEFT_ARROW']:
+                shift_window('LEFT')
+
+            elif event.type == X.KeyPress and self.track and event.detail == KEYS['RIGHT_ARROW']:
+                shift_window('RIGHT')
 
     def listen(self):
         while True:

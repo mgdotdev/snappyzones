@@ -25,10 +25,15 @@ class ZoneProfile:
     def __init__(self, zones) -> None:
         self.zones = zones
 
-    def find_zone(self, x, y):
-        for item in self.zones:
+    def find_zone(self, x, y, shift=None):
+        for index, item in enumerate(self.zones):
             if item.check(x, y):
-                return item
+                if not shift:
+                    return item
+                elif shift == "LEFT":
+                    return self.zones[(index-1)%len(self.zones)]
+                elif shift == "RIGHT":
+                    return self.zones[(index+1)%len(self.zones)]
 
     @staticmethod
     def from_file(path = os.path.join(HERE, "zones.json")):

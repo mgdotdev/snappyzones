@@ -52,8 +52,8 @@ class ZoneBuilder:
     def save(self):
         results = []
         for zone in self.zones:
-            # for some reason this works better with a new display
-            # object on each iteration
+            # for some reason this works better with
+            # a new display object on each iteration
             window = active_window(Display(), zone.id)  
             pg = window.query_tree().parent.query_tree().parent.get_geometry()
             results.append({
