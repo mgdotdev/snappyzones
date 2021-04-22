@@ -15,3 +15,5 @@ With our zones configured, we can now call `snappy` to start Snappy Zones as a t
 Snappy Zones can also be run as a background process. `snappy start` Pushes Snappy Zones to a background process. `snappy stop` kills the process.
 
 This project is currently under active development, please check back for more updates and features soon.
+
+`Note:` This package requires access with the Xorg server bindings, so it should only be used on Xorg-based Unix Systems or systems with sufficient Xorg backwards compatibility.
