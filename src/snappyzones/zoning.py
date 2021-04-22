@@ -34,9 +34,12 @@ class ZoneProfile:
                     return self.zones[(index-1)%len(self.zones)]
                 elif shift == "RIGHT":
                     return self.zones[(index+1)%len(self.zones)]
+        return None
 
     @staticmethod
     def from_file(path = os.path.join(HERE, "zones.json")):
-        with open(path, 'r') as f:
-            data = json.loads(f.read())
-        return ZoneProfile([Zone(**obj) for obj in data])
+        if os.path.isfile(path):
+            with open(path, 'r') as f:
+                data = json.loads(f.read())
+            return ZoneProfile([Zone(**obj) for obj in data])
+        return ZoneProfile([])

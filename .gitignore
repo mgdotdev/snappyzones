@@ -3,3 +3,6 @@
 __pycache__/
 
 *.egg-info/
+
+.pid
+*zones.json

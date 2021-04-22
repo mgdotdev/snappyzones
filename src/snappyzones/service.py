@@ -1,23 +1,17 @@
-from Xlib import X
+from Xlib import X, XK
 from Xlib.ext import record
 from Xlib.display import Display
 from Xlib.protocol import rq
 
 from .snap import snap_window, shift_window
 
-KEYS = {
-    's': 39,
-    'ALT': 64,
-    "UP_ARROW": 111,
-    "LEFT_ARROW": 113,
-    "RIGHT_ARROW": 114,
-    "DOWN_ARROW": 116
-}
 
 class Service:
     def __init__(self) -> None:
-        self.alt = True
-        self.track = False
+        self.keybindings = {
+            XK.XK_s: False,
+            XK.XK_Alt_L: False
+        }
 
         self.display = Display()
         self.root = self.display.screen().root
@@ -40,32 +34,28 @@ class Service:
     def handler(self, reply):
         data = reply.data
         while len(data):
+
             event, data = rq.EventField(None).parse_binary_value(data, self.display.display, None, None)
                 
-            if event.type == X.KeyPress and event.detail == KEYS['ALT']:
-                self.alt = True
+            if event.type == X.KeyPress or X.KeyRelease:
+                keysym = self.display.keycode_to_keysym(event.detail, 0)
+                if keysym in self.keybindings:
+                    self.keybindings[keysym] = (
+                        True if event.type == X.KeyPress else False
+                    )
 
-            elif event.type == X.KeyRelease and event.detail == KEYS['ALT']:
-                self.alt = False
-                self.track = False
+            if all([value == True for value in self.keybindings.values()]):
 
-            elif all([
-                event.type == X.KeyPress,
-                self.alt,
-                event.detail == KEYS['s']
-            ]):
-                self.track = True
+                if event.type == X.ButtonRelease:
+                    snap_window(event.root_x, event.root_y)
 
-            elif event.type == X.ButtonRelease and self.track:
-                snap_window(event.root_x, event.root_y)
-                self.alt = False
-                self.track = False
+                elif event.type == X.KeyPress:
+                    keysym = self.display.keycode_to_keysym(event.detail, 0)
+                    if keysym == XK.XK_Left:
+                        shift_window('LEFT')
 
-            elif event.type == X.KeyPress and self.track and event.detail == KEYS['LEFT_ARROW']:
-                shift_window('LEFT')
-
-            elif event.type == X.KeyPress and self.track and event.detail == KEYS['RIGHT_ARROW']:
-                shift_window('RIGHT')
+                    elif keysym == XK.XK_Right:
+                        shift_window('RIGHT')
 
     def listen(self):
         while True:
