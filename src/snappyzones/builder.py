@@ -15,8 +15,8 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 def _get_recursive(obj, args, default=None):
-    """Apply successive .get() calls to dictionary obj and return result if 
-    something is found, else return None"""
+    """Apply successive .get() calls to container obj and return result if 
+    something is found, else return specified default value"""
     if not args:
         return obj
     if isinstance(obj, (dict, list, tuple)):
