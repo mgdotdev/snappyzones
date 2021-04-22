@@ -22,7 +22,7 @@ def main():
         launch_background_process(*args, **kwargs)
 
     elif cmd == ["stop"]:
-        stop_background_process(*args, **kwargs)
+        stop_background_process()
 
     
 if __name__ == "__main__":
