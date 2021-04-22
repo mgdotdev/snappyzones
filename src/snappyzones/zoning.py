@@ -29,12 +29,21 @@ class ZoneProfile:
         for index, item in enumerate(self.zones):
             if item.check(x, y):
                 if not shift:
-                    return item
+                    obj_i = index
+                    return self._shift_and_return(obj_i)
                 elif shift == "LEFT":
-                    return self.zones[(index-1)%len(self.zones)]
+                    obj_i = (index-1)%len(self.zones)
+                    return self._shift_and_return(obj_i)
+
                 elif shift == "RIGHT":
-                    return self.zones[(index+1)%len(self.zones)]
+                    obj_i = (index+1)%len(self.zones)
+                    return self._shift_and_return(obj_i)
         return None
+
+    def _shift_and_return(self, obj_i):
+        obj = self.zones[obj_i]
+        self.zones = self.zones[obj_i:] + self.zones[:obj_i]
+        return obj
 
     @staticmethod
     def from_file(path = os.path.join(HERE, "zones.json")):

@@ -3,6 +3,8 @@ from Xlib.ext import record
 from Xlib.display import Display
 from Xlib.protocol import rq
 
+from snappyzones.zoning import ZoneProfile
+
 from .snap import snap_window, shift_window
 
 
@@ -12,6 +14,7 @@ class Service:
             XK.XK_s: False,
             XK.XK_Alt_L: False
         }
+        self.zp = ZoneProfile.from_file()
 
         self.display = Display()
         self.root = self.display.screen().root
@@ -47,15 +50,15 @@ class Service:
             if all([value == True for value in self.keybindings.values()]):
 
                 if event.type == X.ButtonRelease:
-                    snap_window(event.root_x, event.root_y)
+                    snap_window(self, event.root_x, event.root_y)
 
                 elif event.type == X.KeyPress:
                     keysym = self.display.keycode_to_keysym(event.detail, 0)
                     if keysym == XK.XK_Left:
-                        shift_window('LEFT')
+                        shift_window(self, 'LEFT')
 
                     elif keysym == XK.XK_Right:
-                        shift_window('RIGHT')
+                        shift_window(self, 'RIGHT')
 
     def listen(self):
         while True:
