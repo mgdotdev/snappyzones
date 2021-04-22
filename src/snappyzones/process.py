@@ -33,10 +33,10 @@ def launch_background_process(*args, **kwargs):
     # if there is a process already running, kill it
     _pid = _file_pid()
     if _check_pid(_pid):
-        print("Background Snappy Zones process found: killing process...")
+        print("background Snappy Zones process found: killing process...")
         stop_background_process(_pid)
         
-    print("STARTING...")
+    print("starting...")
     try:
         pid = os.fork()
         if pid > 0:
@@ -50,7 +50,7 @@ def launch_background_process(*args, **kwargs):
     with open(os.path.join(HERE, '.pid'), 'w') as f:
         f.write(pid)
 
-    print(f"STARTED PID: {pid}")
+    print(f"started PID: {pid}")
     service = Service()
     service.listen()
     
@@ -59,9 +59,9 @@ def stop_background_process(pid=None):
     if not pid:
         pid = _file_pid()
     if _check_pid(pid):
-        print(f"STOPPING...")
+        print(f"stopping...")
         os.kill(pid, signal.SIGTERM)
-        print(f"STOPPED PID: {pid}")
+        print(f"stopped PID: {pid}")
         os.remove(PID_FILE)
     else:
         print(

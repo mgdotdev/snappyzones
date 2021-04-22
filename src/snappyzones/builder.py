@@ -7,10 +7,25 @@ from Xlib import X
 from Xlib.display import Display
 from Xlib.error import ConnectionClosedError
 
+from .process import _check_pid, _file_pid, launch_background_process
 from .snap import active_window
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
+
+
+def _get_recursive(obj, args, default=None):
+    """Apply successive .get() calls to dictionary obj and return result if 
+    something is found, else return None"""
+    if not args:
+        return obj
+    if isinstance(obj, (dict, list, tuple)):
+        try:
+            sub_obj = obj.__getitem__(args[0])
+            return _get_recursive(sub_obj, args[1:], default)
+        except (KeyError, IndexError):
+            return default
+    return default
 
 
 class ZoneBuilder:
@@ -19,7 +34,6 @@ class ZoneBuilder:
         self.zones = []
         self.display = Display()
         self.screen = self.display.screen()
-        self.running = True
 
         if count := kwargs.get('-n'):
             self.add(count)
@@ -63,10 +77,21 @@ class ZoneBuilder:
                 "height": pg.height
             })
         self._write(results)
+
+        # if service is running, restart with new zones
+        if _check_pid(_file_pid()):
+            print("restarting background process for updated zone settings...")
+            launch_background_process()
+
         self.terminate()
 
     def add(self, count):
-        for _ in range(int(count)):
+        previous_settings = self._read() # list of dicts
+        for i in range(int(count)):
+            x = _get_recursive(previous_settings, (i, "x"), default=10)
+            y = _get_recursive(previous_settings, (i, "y"), default=10)
+            width = _get_recursive(previous_settings, (i, "width"), default=500)
+            height = _get_recursive(previous_settings, (i, "height"), default=250)
             window = self.screen.root.create_window(
                 10, 10, 500, 250, 1,
                 self.screen.root_depth,
@@ -74,6 +99,14 @@ class ZoneBuilder:
                 event_mask=X.ExposureMask | X.KeyPressMask,
             )
             window.map()
+            window.configure(
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                stack_mode=X.Above
+            )           
+            self.display.sync()
             self.zones.append(window)
         thread = threading.Thread(target=self.loop)
         thread.daemon = True
@@ -96,8 +129,10 @@ class ZoneBuilder:
                 os._exit(1)
 
     def _read(self, path = os.path.join(HERE, "zones.json")):
-        with open(path, 'r') as f:
-            return json.loads(f.read())
+        if os.path.isfile(path):
+            with open(path, 'r') as f:
+                return json.loads(f.read())
+        return None
 
     def _write(self, results, path = os.path.join(HERE, "zones.json")):
         with open(path, 'w') as f:
