@@ -1,8 +1,6 @@
-import json
-import os.path
+from Xlib import XK
 
-HERE = os.path.abspath(os.path.dirname(__file__))
-
+from .conf.settings import SETTINGS
 
 class Zone:
     def __init__(self, x, y, width, height) -> None:
@@ -31,11 +29,11 @@ class ZoneProfile:
                 if not shift:
                     obj_i = index
                     return self._shift_and_return(obj_i)
-                elif shift == "LEFT":
+                elif shift == XK.XK_Left:
                     obj_i = (index-1)%len(self.zones)
                     return self._shift_and_return(obj_i)
 
-                elif shift == "RIGHT":
+                elif shift == XK.XK_Right:
                     obj_i = (index+1)%len(self.zones)
                     return self._shift_and_return(obj_i)
         return None
@@ -46,9 +44,7 @@ class ZoneProfile:
         return obj
 
     @staticmethod
-    def from_file(path = os.path.join(HERE, "zones.json")):
-        if os.path.isfile(path):
-            with open(path, 'r') as f:
-                data = json.loads(f.read())
+    def from_file():
+        if data := SETTINGS.zones:
             return ZoneProfile([Zone(**obj) for obj in data])
         return ZoneProfile([])

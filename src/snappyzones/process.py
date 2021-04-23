@@ -2,21 +2,8 @@ import os
 import signal
 import sys
 
-from functools import lru_cache
-
 from .service import Service
-
-
-HERE = os.path.abspath(os.path.dirname(__file__))
-PID_FILE = os.path.join(HERE, '.pid')
-
-
-def _file_pid():
-    if os.path.isfile(PID_FILE):
-        with open(PID_FILE, 'r') as f:
-            pid = int(f.read())
-        return pid
-    return None
+from .conf.settings import SETTINGS
 
 
 def _check_pid(pid): 
@@ -31,7 +18,7 @@ def _check_pid(pid):
 
 def launch_background_process(*args, **kwargs):
     # if there is a process already running, kill it
-    _pid = _file_pid()
+    _pid = SETTINGS.pid
     if _check_pid(_pid):
         print("background Snappy Zones process found: killing process...")
         stop_background_process(_pid)
@@ -46,10 +33,7 @@ def launch_background_process(*args, **kwargs):
         sys.exit(1)
 
     pid = str(os.getpid())
-
-    with open(os.path.join(HERE, '.pid'), 'w') as f:
-        f.write(pid)
-
+    SETTINGS.pid = pid
     print(f"started PID: {pid}")
     service = Service()
     service.listen()
@@ -57,12 +41,12 @@ def launch_background_process(*args, **kwargs):
 
 def stop_background_process(pid=None):
     if not pid:
-        pid = _file_pid()
+        pid = SETTINGS.pid
     if _check_pid(pid):
         print(f"stopping...")
         os.kill(pid, signal.SIGTERM)
         print(f"stopped PID: {pid}")
-        os.remove(PID_FILE)
+        os.remove(SETTINGS._pid_file)
     else:
         print(
             "No background process was found. "

@@ -2,8 +2,6 @@ from Xlib import X
 from Xlib.error import XError
 from Xlib.display import Display
 
-from .zoning import ZoneProfile
-
 
 def active_window(display, window_id=None):
     if not window_id:
@@ -34,13 +32,13 @@ def geometry_deltas(window):
     return dx, dy, dw, dh
 
 
-def shift_window(self, direction):
+def shift_window(self, keysym):
     display = Display()
     zone_profile = self.zp
     window = active_window(display)
     dx, dy, dw, dh = geometry_deltas(window)
     pg = window.query_tree().parent.query_tree().parent.get_geometry()
-    zone = zone_profile.find_zone(pg.x + pg.width/2, pg.y + pg.height/2, direction)
+    zone = zone_profile.find_zone(pg.x + pg.width/2, pg.y + pg.height/2, keysym)
     if window and zone:
         window.configure(
             x=zone.x,

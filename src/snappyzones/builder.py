@@ -7,9 +7,9 @@ from Xlib import X
 from Xlib.display import Display
 from Xlib.error import ConnectionClosedError
 
-from .process import _check_pid, _file_pid, launch_background_process
+from .process import _check_pid, launch_background_process
 from .snap import active_window
-
+from .conf.settings import SETTINGS
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -76,17 +76,17 @@ class ZoneBuilder:
                 "width": pg.width,
                 "height": pg.height
             })
-        self._write(results)
+        SETTINGS.zones = results
 
         # if service is running, restart with new zones
-        if _check_pid(_file_pid()):
+        if _check_pid(SETTINGS.pid):
             print("restarting background process for updated zone settings...")
             launch_background_process()
 
         self.terminate()
 
     def add(self, count):
-        previous_settings = self._read() # list of dicts
+        previous_settings = SETTINGS.zones # list of dicts
         for i in range(int(count)):
             x = _get_recursive(previous_settings, (i, "x"), default=10)
             y = _get_recursive(previous_settings, (i, "y"), default=10)
@@ -127,16 +127,6 @@ class ZoneBuilder:
                 # for now, just kill everything
                 print()
                 os._exit(1)
-
-    def _read(self, path = os.path.join(HERE, "zones.json")):
-        if os.path.isfile(path):
-            with open(path, 'r') as f:
-                return json.loads(f.read())
-        return None
-
-    def _write(self, results, path = os.path.join(HERE, "zones.json")):
-        with open(path, 'w') as f:
-            f.write(json.dumps(results, indent=2, sort_keys=True))
 
     def terminate(self):
         sys.exit()
