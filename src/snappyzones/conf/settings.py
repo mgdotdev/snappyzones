@@ -38,7 +38,7 @@ class Settings:
         ]
         if results:
             return results
-        return ["Alt_L", "s"] # a default in case someone tries to be funny
+        return ["Shift_L"] # a default in case someone tries to be funny
 
     @property
     def _keybindings_file(self):
