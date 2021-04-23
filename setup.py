@@ -46,5 +46,5 @@ setup(
     python_requires='>=3.8',
     tests_require=read_requirements("requirements_testing.txt"),
     url="https://github.com/1mikegrn/snappyzones",
-    version="0.0.2",
+    version="0.0.3",
 )
