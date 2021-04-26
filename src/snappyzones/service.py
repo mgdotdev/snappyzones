@@ -14,6 +14,7 @@ class Service:
             for key in SETTINGS.keybindings
         }
         self.zp = ZoneProfile.from_file()
+        self.coordinates = Coordinates()
 
         self.display = Display()
         self.root = self.display.screen().root
@@ -46,7 +47,8 @@ class Service:
                         True if event.type == X.KeyPress else False
                     )
 
-            if all([value == True for value in self.active_keys.values()]):
+            elif all([value == True for value in self.active_keys.values()]):
+                self.coordinates.add(event.root_x, event.root_y)
 
                 if event.type == X.ButtonRelease:
                     snap_window(self, event.root_x, event.root_y)
@@ -54,7 +56,34 @@ class Service:
                 elif event.type == X.KeyPress:
                     keysym = self.display.keycode_to_keysym(event.detail, 0)
                     shift_window(self, keysym)
+            
+            else:
+                self.coordinates.clear()
 
     def listen(self):
         while True:
             self.root.display.next_event()
+
+
+class Coordinates:
+    def __init__(self) -> None:
+        self.x = []
+        self.y = []
+
+    def __getitem__(self, item):
+        return self.x[item], self.y[item]
+
+    def __iter__(self):
+        self._points = zip(self.x, self.y)
+        return self
+
+    def __next__(self):
+        return self._points.__next__()
+
+    def add(self, x, y):
+        self.x.append(x)
+        self.y.append(y)
+
+    def clear(self):
+        self.x = []
+        self.y = []

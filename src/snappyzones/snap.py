@@ -55,7 +55,7 @@ def snap_window(self, x, y):
     zone_profile = self.zp
     window = active_window(display)
     dx, dy, dw, dh = geometry_deltas(window)
-    zone = zone_profile.find_zone(x, y)
+    zone = zone_profile.find_zones(self, x, y)
     if window and zone:
         window.configure(
             x=zone.x,
@@ -65,3 +65,4 @@ def snap_window(self, x, y):
             stack_mode=X.Above
         )
         display.sync()
+
