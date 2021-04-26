@@ -41,6 +41,13 @@ class Settings:
         return ["Shift_L"] # a default in case someone tries to be funny
 
     @property
+    def _raw_keybindings(self):
+        _data = self._read(self._keybindings_file)[1:]
+        return [
+            char.replace("# ", "") for char in _data.split('\n')
+        ]
+
+    @property
     def _keybindings_file(self):
         return os.path.join(HERE, '.keybindings')
 

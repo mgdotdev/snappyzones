@@ -39,7 +39,7 @@ class Service:
 
             event, data = rq.EventField(None).parse_binary_value(data, self.display.display, None, None)
                 
-            if event.type == X.KeyPress or X.KeyRelease:
+            if event.type in (X.KeyPress, X.KeyRelease):
                 keysym = self.display.keycode_to_keysym(event.detail, 0)
                 if keysym in self.active_keys:
                     self.active_keys[keysym] = (

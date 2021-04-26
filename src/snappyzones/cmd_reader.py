@@ -15,8 +15,13 @@ def _get_help(cmd=""):
     sys.exit()
 
 def reader():
-    cmd = sys.argv[1:2]
-    args = sys.argv[2::]
+    _input = sys.argv
+    if len(_input) == 1:
+        return "", [], {}
+    
+    cmd = _input[1:2].pop()
+
+    args = _input[2::]
     kwargs = {}
 
     if cmd in ("-h", "--help"):
