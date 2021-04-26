@@ -17,9 +17,7 @@ class Zone:
         self.height = height
 
     def check(self, x, y):
-        if (
-            self.x <= x <= self.x + self.width
-        ) and (
+        if (self.x <= x <= self.x + self.width) and (
             self.y <= y <= self.y + self.height
         ):
             return True
@@ -29,9 +27,9 @@ class Zone:
     def corners(self):
         return [
             (self.x, self.y),
-            (self.x+self.width, self.y),
-            (self.x+self.width, self.y+self.height),
-            (self.x, self.y+self.height)
+            (self.x + self.width, self.y),
+            (self.x + self.width, self.y + self.height),
+            (self.x, self.y + self.height),
         ]
 
 
@@ -46,7 +44,7 @@ class ZoneProfile:
                 if item.check(*coordinate) and item not in _zones:
                     _zones.append(item)
                     break
-        
+
         if not _zones:
             return None
 
@@ -65,18 +63,20 @@ class ZoneProfile:
         elif abs(mean(set(i.y for i in _zones)) - y_min_zone.y) < MEAN_PIXEL_TOLERANCE:
             width = sum(i.width for i in _zones)
             height = y_min_zone.height
-        
+
         # stretch first zone into last zone
         elif len(_zones) == 2:
             initial_zone = self.find_zone(*service.coordinates[0])
             final_zone = self.find_zone(*service.coordinates[-1])
-            slope = abs((initial_zone.y - final_zone.y) / (initial_zone.x - final_zone.x))
-            if slope > 1: # means we're stretching the height
+            slope = abs(
+                (initial_zone.y - final_zone.y) / (initial_zone.x - final_zone.x)
+            )
+            if slope > 1:  # means we're stretching the height
                 x = x_min_zone.x
                 y = y_min_zone.y
                 width = initial_zone.width
                 height = initial_zone.height + final_zone.height
-            else: # means we're stretching the width
+            else:  # means we're stretching the width
                 x = x_min_zone.x
                 y = initial_zone.y
                 width = initial_zone.width + final_zone.width
@@ -91,12 +91,7 @@ class ZoneProfile:
                     width = z.corners[1][0] - x_min_zone.x
                 if z.corners[3][1] - y_min_zone.y > height:
                     height = z.corners[3][1] - y_min_zone.y
-            return Zone(
-                x_min_zone.x,
-                y_min_zone.y,
-                width,
-                height
-            )
+            return Zone(x_min_zone.x, y_min_zone.y, width, height)
         return Zone(x_min_zone.x, y_min_zone.y, width, height)
 
     def find_zone(self, x, y, shift=None):
@@ -106,11 +101,11 @@ class ZoneProfile:
                     obj_i = index
                     return self._shift_and_return(obj_i)
                 elif shift == XK.XK_Left:
-                    obj_i = (index-1)%len(self.zones)
+                    obj_i = (index - 1) % len(self.zones)
                     return self._shift_and_return(obj_i)
 
                 elif shift == XK.XK_Right:
-                    obj_i = (index+1)%len(self.zones)
+                    obj_i = (index + 1) % len(self.zones)
                     return self._shift_and_return(obj_i)
         return None
 

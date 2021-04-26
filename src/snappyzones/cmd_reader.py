@@ -2,6 +2,7 @@ import sys
 
 from .help_menu import HelpMenu
 
+
 def simple_isnan(item):
     try:
         float(item)
@@ -9,16 +10,18 @@ def simple_isnan(item):
     except ValueError:
         return True
 
+
 def _get_help(cmd=""):
     help_menu = HelpMenu()
     help_menu.get(cmd)
     sys.exit()
 
+
 def reader():
     _input = sys.argv
     if len(_input) == 1:
         return "", [], {}
-    
+
     cmd = _input[1:2].pop()
 
     args = _input[2::]
@@ -28,14 +31,17 @@ def reader():
         return _get_help()
     elif any(h in args for h in ("-h", "--help")):
         return _get_help(cmd)
-        
-    kwarg_keys = reversed([
-        index for index, item in enumerate(args) 
-        if (item.startswith('-') and simple_isnan(item))
-    ])
+
+    kwarg_keys = reversed(
+        [
+            index
+            for index, item in enumerate(args)
+            if (item.startswith("-") and simple_isnan(item))
+        ]
+    )
     for k in kwarg_keys:
         try:
-            value = args.pop(k+1)
+            value = args.pop(k + 1)
         except IndexError:
             value = True
         key = args.pop(k)

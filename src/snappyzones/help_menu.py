@@ -17,9 +17,8 @@ class CacheProperty:
 
 class HelpMenu:
     def __init__(self) -> None:
-        with open(os.path.join(HERE, 'help_text.md'), 'r') as f:
+        with open(os.path.join(HERE, "help_text.md"), "r") as f:
             self._raw_menu = f.read()
-
 
     def get(self, cmd):
         pass

@@ -6,9 +6,9 @@ from .service import Service
 from .conf.settings import SETTINGS
 
 
-def _check_pid(pid): 
+def _check_pid(pid):
     if not pid:
-        return False       
+        return False
     try:
         os.kill(pid, 0)
     except OSError:
@@ -22,7 +22,7 @@ def launch_background_process(*args, **kwargs):
     if _check_pid(_pid):
         print("background Snappy Zones process found: killing process...")
         stop_background_process(_pid)
-        
+
     print("starting...")
     try:
         pid = os.fork()
@@ -37,7 +37,7 @@ def launch_background_process(*args, **kwargs):
     print(f"started PID: {pid}")
     service = Service()
     service.listen()
-    
+
 
 def stop_background_process(pid=None):
     if not pid:
@@ -48,8 +48,4 @@ def stop_background_process(pid=None):
         print(f"stopped PID: {pid}")
         os.remove(SETTINGS._pid_file)
     else:
-        print(
-            "No background process was found. "
-            "no action will be taken."
-        )
-
+        print("No background process was found. " "no action will be taken.")
