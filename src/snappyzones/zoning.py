@@ -4,6 +4,7 @@ from .conf.settings import SETTINGS
 
 MEAN_PIXEL_TOLERANCE = 10
 
+
 def mean(lst):
     return sum(lst) / len(lst)
 
@@ -38,7 +39,7 @@ class ZoneProfile:
     def __init__(self, zones) -> None:
         self.zones = zones
 
-    def find_zones(self, service, x, y, shift=None):
+    def find_zones(self, service, x, y):
         _zones = []
         for coordinate in service.coordinates:
             for item in self.zones:
@@ -97,7 +98,6 @@ class ZoneProfile:
                 height
             )
         return Zone(x_min_zone.x, y_min_zone.y, width, height)
-
 
     def find_zone(self, x, y, shift=None):
         for index, item in enumerate(self.zones):

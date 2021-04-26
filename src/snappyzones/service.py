@@ -71,14 +71,12 @@ class Coordinates:
         self.y = []
 
     def __getitem__(self, item):
+        """returns an (x,y) coordinate"""
         return self.x[item], self.y[item]
 
     def __iter__(self):
-        self._points = zip(self.x, self.y)
-        return self
-
-    def __next__(self):
-        return self._points.__next__()
+        """iterate over (x,y) coordinates"""
+        return zip(self.x, self.y)
 
     def add(self, x, y):
         self.x.append(x)
