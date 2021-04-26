@@ -26,15 +26,14 @@ class ZoneProfile:
     def find_zone(self, x, y, shift=None):
         for index, item in enumerate(self.zones):
             if item.check(x, y):
-                if not shift:
-                    obj_i = index
-                    return self._shift_and_return(obj_i)
-                elif shift == XK.XK_Left:
+                if shift == XK.XK_Left:
                     obj_i = (index-1)%len(self.zones)
                     return self._shift_and_return(obj_i)
-
                 elif shift == XK.XK_Right:
                     obj_i = (index+1)%len(self.zones)
+                    return self._shift_and_return(obj_i)
+                else:
+                    obj_i = index
                     return self._shift_and_return(obj_i)
         return None
 

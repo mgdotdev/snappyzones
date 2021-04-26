@@ -13,7 +13,7 @@ class Service:
             XK.string_to_keysym(key): False 
             for key in SETTINGS.keybindings
         }
-        self.zp = ZoneProfile.from_file()
+        self.zone_profile = ZoneProfile.from_file()
 
         self.display = Display()
         self.root = self.display.screen().root
@@ -53,8 +53,11 @@ class Service:
 
                 elif event.type == X.KeyPress:
                     keysym = self.display.keycode_to_keysym(event.detail, 0)
-                    shift_window(self, keysym)
+                    if keysym in (
+                        XK.XK_Left, XK.XK_Right, XK.XK_Down, XK.XK_Up
+                    ):
+                        shift_window(self, keysym)
 
     def listen(self):
         while True:
-            self.root.display.next_event()
+            self.display.next_event()

@@ -8,7 +8,7 @@ from Xlib.display import Display
 from Xlib.error import ConnectionClosedError
 
 from .process import _check_pid, launch_background_process
-from .snap import active_window
+from .snap import active_window, geometry_deltas
 from .conf.settings import SETTINGS
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -65,10 +65,11 @@ class ZoneBuilder:
     @property
     def save(self):
         results = []
+        display = Display()
         for zone in self.zones:
             # for some reason this works better with
             # a new display object on each iteration
-            window = active_window(Display(), zone.id)  
+            window = active_window(display, zone.id)  
             pg = window.query_tree().parent.query_tree().parent.get_geometry()
             results.append({
                 "x": pg.x,

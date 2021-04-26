@@ -16,6 +16,10 @@ def _get_help(cmd=""):
 
 def reader():
     cmd = sys.argv[1:2]
+
+    if cmd:
+        cmd = cmd.pop()
+        
     args = sys.argv[2::]
     kwargs = {}
 
