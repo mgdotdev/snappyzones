@@ -6,7 +6,6 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 class Settings:
-
     @property
     def pid(self):
         if res := self._read(self._pid_file):
@@ -25,48 +24,56 @@ class Settings:
 
     @zones.setter
     def zones(self, _zones):
-        self._write(
-            self._zone_file, json.dumps(_zones, indent=2, sort_keys=True)
-        )
+        self._write(self._zone_file, json.dumps(_zones, indent=2, sort_keys=True))
 
     @property
     def keybindings(self):
         _data = self._read(self._keybindings_file)
         results = [
-            char for char in _data.split('\n') 
-            if not char.startswith("#") and char != ""
+            char
+            for char in _data.split("\n")
+            if not char.startswith(("#", "!")) and char != ""
         ]
         if results:
             return results
-        return ["Shift_L"] # a default in case someone tries to be funny
+        return ["Shift_L"]  # a default in case someone tries to be funny
+
+    @property
+    def keybinding_modifier(self):
+        _data = self._read(self._keybindings_file)
+        results = [
+            char.replace("! ") for char in _data.split("\n") if char.startswith("!")
+        ]
+        if results:
+            return results
+        return ["Control_L"]  # a default in case someone tries to be funny
 
     @property
     def _raw_keybindings(self):
         _data = self._read(self._keybindings_file)[1:]
-        return [
-            char.replace("# ", "") for char in _data.split('\n')
-        ]
+        return [char.replace("# ", "") for char in _data.split("\n")]
 
     @property
     def _keybindings_file(self):
-        return os.path.join(HERE, '.keybindings')
+        return os.path.join(HERE, ".keybindings")
 
     @property
     def _zone_file(self):
-        return os.path.join(HERE, 'zones.json')
+        return os.path.join(HERE, "zones.json")
 
     @property
     def _pid_file(self):
-        return os.path.join(HERE, '.pid')
+        return os.path.join(HERE, ".pid")
 
     def _read(self, path, default=None):
         if os.path.isfile(path):
-            with open(path, 'r') as f:
+            with open(path, "r") as f:
                 return f.read()
         return default
 
     def _write(self, path, obj):
-        with open(path, 'w') as f:
+        with open(path, "w") as f:
             f.write(obj)
+
 
 SETTINGS = Settings()
