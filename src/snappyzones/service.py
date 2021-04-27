@@ -65,7 +65,7 @@ class Service:
 
             if all(self.active_keys.values()):
                 self.coordinates.add(event.root_x, event.root_y)
-                if event.type == X.ButtonRelease:
+                if (event.type, event.detail) == (X.ButtonRelease, X.Button1):
                     snap_window(self, event.root_x, event.root_y)
                 elif event.type == X.KeyPress:
                     keysym = self.display.keycode_to_keysym(event.detail, 0)

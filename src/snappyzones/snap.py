@@ -1,5 +1,5 @@
 from Xlib import X, XK
-from Xlib.error import XError
+from Xlib.error import BadDrawable, XError
 from Xlib.display import Display
 
 
@@ -37,36 +37,42 @@ def geometry_deltas(window):
 
 
 def shift_window(self, keysym, stretch=False):
-    display = Display()
-    zone_profile = self.zp
-    window = active_window(display)
-    wg = window.get_geometry()
-    dx, dy, dw, dh = geometry_deltas(window)
-    pg = window.query_tree().parent.query_tree().parent.get_geometry()
-    zone = zone_profile.find_zone(pg.x + pg.width / 2, pg.y + pg.height / 2, keysym)
-    if window and zone:
-        window.configure(
-            x=zone.x,
-            y=zone.y,
-            width=zone.width - dx,
-            height=zone.height - dy,
-            stack_mode=X.Above,
-        )
-        display.sync()
+    try:
+        display = Display()
+        zone_profile = self.zp
+        window = active_window(display)
+        wg = window.get_geometry()
+        dx, dy, dw, dh = geometry_deltas(window)
+        pg = window.query_tree().parent.query_tree().parent.get_geometry()
+        zone = zone_profile.find_zone(pg.x + pg.width / 2, pg.y + pg.height / 2, keysym)
+        if window and zone:
+            window.configure(
+                x=zone.x,
+                y=zone.y,
+                width=zone.width - dx,
+                height=zone.height - dy,
+                stack_mode=X.Above,
+            )
+            display.sync()
+    except BadDrawable:
+        pass
 
 
 def snap_window(self, x, y):
-    display = Display()
-    zone_profile = self.zp
-    window = active_window(display)
-    dx, dy, dw, dh = geometry_deltas(window)
-    zone = zone_profile.find_zones(self, x, y)
-    if window and zone:
-        window.configure(
-            x=zone.x,
-            y=zone.y,
-            width=zone.width - dx,
-            height=zone.height - dy,
-            stack_mode=X.Above,
-        )
-        display.sync()
+    try:
+        display = Display()
+        zone_profile = self.zp
+        window = active_window(display)
+        dx, dy, dw, dh = geometry_deltas(window)
+        zone = zone_profile.find_zones(self, x, y)
+        if window and zone:
+            window.configure(
+                x=zone.x,
+                y=zone.y,
+                width=zone.width - dx,
+                height=zone.height - dy,
+                stack_mode=X.Above,
+            )
+            display.sync()
+    except BadDrawable:
+        pass
