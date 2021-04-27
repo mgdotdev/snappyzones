@@ -1,5 +1,5 @@
 from Xlib import X, XK
-from Xlib.error import BadDrawable, XError
+from Xlib.error import BadDrawable, BadWindow, XError
 from Xlib.display import Display
 
 
@@ -76,3 +76,33 @@ def snap_window(self, x, y):
             display.sync()
     except BadDrawable:
         pass
+
+
+def cycle_windows(self, keysym):
+    try:
+        display = Display()
+        window = active_window(display).query_tree().parent.query_tree().parent
+        root = display.screen().root
+        tree = root.query_tree()
+
+        stack = [
+            item
+            for item in tree.children
+            if all(
+                getattr(item.get_geometry(), x) == getattr(window.get_geometry(), x)
+                for x in ("x", "y", "width", "height")
+            )
+        ]
+
+        if keysym == XK.XK_Up:
+            item = display.create_resource_object("window", stack[0].id)
+            item.configure(stack_mode=X.Below)
+            display.set_input_focus(stack[1], X.RevertToParent, X.CurrentTime)
+
+        elif keysym == XK.XK_Down:
+            item = display.create_resource_object("window", stack[-1].id)
+            item.configure(stack_mode=X.Above)
+
+        display.sync()
+    except BadWindow as e:
+        print(e)

@@ -3,7 +3,7 @@ from Xlib.ext import record
 from Xlib.display import Display
 from Xlib.protocol import rq
 
-from .snap import snap_window, shift_window
+from .snap import cycle_windows, snap_window, shift_window
 from .zoning import ZoneProfile
 from .conf.settings import SETTINGS
 
@@ -69,7 +69,10 @@ class Service:
                     snap_window(self, event.root_x, event.root_y)
                 elif event.type == X.KeyPress:
                     keysym = self.display.keycode_to_keysym(event.detail, 0)
-                    shift_window(self, keysym)
+                    if keysym in (XK.XK_Left, XK.XK_Right):
+                        shift_window(self, keysym)
+                    elif keysym in (XK.XK_Up, XK.XK_Down):
+                        cycle_windows(self, keysym)
 
             else:
                 self.coordinates.clear()
