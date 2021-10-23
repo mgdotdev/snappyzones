@@ -55,7 +55,7 @@ class Settings:
 
     @property
     def _keybindings_file(self):
-        return os.path.join(HERE, ".keybindings")
+        return os.path.join(HERE, "keybindings.txt")
 
     @property
     def _zone_file(self):

@@ -41,10 +41,10 @@ setup(
     long_description_content_type="text/markdown",
     name="snappyzones",
     packages=find_packages(where="src"),
-    package_data={"": ["*.json"]},
+    package_data={"": ["*.json", "*.txt"]},
     package_dir={"": "src"},
     python_requires=">=3.8",
     tests_require=read_requirements("requirements_testing.txt"),
     url="https://github.com/1mikegrn/snappyzones",
-    version="0.0.4",
+    version="0.0.5",
 )
