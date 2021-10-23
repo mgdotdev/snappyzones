@@ -1,0 +1,3 @@
+include requirements.txt
+include requirements-testing.txt
+recursive-include src *.txt *.json
