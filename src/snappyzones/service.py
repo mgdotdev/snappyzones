@@ -2,6 +2,7 @@ from Xlib import X, XK
 from Xlib.ext import record
 from Xlib.display import Display
 from Xlib.protocol import rq
+from Xlib.xobject.drawable import Window
 
 from .snap import snap_window, shift_window
 from .zoning import ZoneProfile
@@ -9,7 +10,9 @@ from .conf.settings import SETTINGS
 
 
 class Service:
-    def __init__(self) -> None:
+    def __init__(self, window_manager:str = None) -> None:
+        
+        self.window_manager = window_manager
         self.active_keys = {
             XK.string_to_keysym(key): False for key in SETTINGS.keybindings
         }
@@ -66,11 +69,10 @@ class Service:
             if all(self.active_keys.values()):
                 self.coordinates.add(event.root_x, event.root_y)
                 if (event.type, event.detail) == (X.ButtonRelease, X.Button1):
-                    snap_window(self, event.root_x, event.root_y)
+                    snap_window(self, event.root_x, event.root_y, window_manager=self.window_manager)
                 elif event.type == X.KeyPress:
                     keysym = self.display.keycode_to_keysym(event.detail, 0)
-                    shift_window(self, keysym)
-
+                    shift_window(self, keysym, window_manager=self.window_manager)
             else:
                 self.coordinates.clear()
 
